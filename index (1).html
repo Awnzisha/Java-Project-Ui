@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bengali Book Shop — Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Noto+Serif+Bengali:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f0a06;
+    --panel:#1b140d;
+    --panel-2:#241a10;
+    --gold:#d4af37;
+    --gold-soft:#c9a04a;
+    --gold-dim:#8a6f30;
+    --text:#f1e9d8;
+    --text-dim:#a89a82;
+    --border:#3a2c18;
+    --green:#3fae6a;
+    --red:#b5483f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at top, #1a120a 0%, #0b0705 60%, #050302 100%);
+    color:var(--text);
+    font-family:'Inter','Noto Sans Bengali',sans-serif;
+    min-height:100vh;
+  }
+  .bn{font-family:'Noto Serif Bengali','Inter',sans-serif;}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 40px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#160f08,#100b06);
+    flex-wrap:wrap;gap:14px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .logo{font-size:30px;line-height:1;}
+  .brand h1{
+    font-family:'Playfair Display',serif;
+    font-size:24px;color:var(--gold);margin:0;letter-spacing:.3px;
+  }
+  .brand .sub{font-size:11px;letter-spacing:2px;color:var(--text-dim);margin-top:2px;}
+
+  nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .nav-btn{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:8px;border:1px solid transparent;
+    background:none;color:var(--text-dim);font-size:15px;cursor:pointer;
+    font-family:'Playfair Display',serif;font-weight:600;
+    transition:all .15s ease;
+  }
+  .nav-btn:hover{color:var(--text);}
+  .nav-btn.active{
+    color:var(--gold);
+    background:var(--panel-2);
+    border-color:var(--gold-dim);
+  }
+  .nav-btn.team{
+    border:1px solid var(--gold-dim);
+    color:var(--gold);
+    background:#1d160c;
+  }
+
+  main{padding:36px 40px 80px;max-width:1500px;margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* Dashboard */
+  .hero{
+    border:1px solid var(--gold-dim);
+    border-radius:18px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,175,55,.06), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(212,175,55,.02) 0 2px, transparent 2px 40px),
+      var(--panel);
+    padding:60px 30px 40px;
+    text-align:center;
+    margin-bottom:40px;
+  }
+  .hero .icon{font-size:46px;}
+  .hero h2{
+    font-family:'Playfair Display',serif;
+    font-size:46px;color:var(--gold);margin:8px 0 6px;font-weight:800;
+  }
+  .hero p{color:var(--text-dim);font-size:16px;margin:0 0 26px;}
+  .divider{width:60px;height:2px;background:var(--gold-dim);margin:0 auto 30px;}
+  .stats{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;}
+  .stat{
+    border:1px solid var(--gold-dim);border-radius:10px;
+    padding:22px 38px;min-width:160px;background:rgba(0,0,0,.2);
+  }
+  .stat .num{font-family:'Playfair Display',serif;font-size:34px;font-weight:800;color:var(--gold);}
+  .stat .label{font-size:12px;letter-spacing:1.5px;color:var(--text-dim);margin-top:4px;}
+
+  .section-title{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Playfair Display',serif;
+    font-size:24px;color:var(--gold);margin:0 0 20px;
+  }
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap;}
+  .search{
+    background:#100b06;border:1px solid var(--border);color:var(--text);
+    padding:10px 16px;border-radius:8px;min-width:260px;font-size:14px;
+  }
+  .search::placeholder{color:var(--text-dim);}
+  .btn{
+    border:1px solid var(--gold-dim);background:var(--gold-soft);color:#16100a;
+    padding:10px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;
+    transition:filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn.ghost{
+    background:transparent;color:var(--gold);
+  }
+  .btn.danger{
+    background:var(--red);border-color:#7a2c25;color:#fff;
+  }
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+    gap:24px;
+  }
+  .card{
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    background:var(--panel);display:flex;flex-direction:column;
+  }
+  .card .cover{
+    height:170px;display:flex;align-items:center;justify-content:center;
+    font-size:54px;position:relative;
+  }
+  .card .vol{
+    position:absolute;bottom:10px;right:10px;font-size:10px;color:#fff;
+    background:rgba(0,0,0,.35);padding:3px 8px;border-radius:4px;letter-spacing:1px;
+  }
+  .card .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card .title{font-family:'Noto Serif Bengali',serif;font-size:18px;font-weight:700;color:var(--text);}
+  .card .author{font-size:13px;color:var(--text-dim);display:flex;gap:6px;align-items:center;}
+  .tag{
+    align-self:flex-start;border:1px solid var(--gold-dim);color:var(--gold);
+    font-size:12px;padding:3px 12px;border-radius:14px;
+  }
+  .row-between{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+  .price{font-family:'Playfair Display',serif;color:var(--gold);font-size:18px;font-weight:700;}
+  .stock{font-size:12px;color:var(--green);border:1px solid #245c3a;padding:4px 10px;border-radius:14px;background:rgba(63,174,106,.08);}
+  .stock.low{color:#e0a23f;border-color:#7a5a23;background:rgba(224,162,63,.08);}
+  .actions{display:flex;gap:8px;margin-top:10px;}
+  .actions button{flex:1;padding:8px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600;}
+  .edit-btn{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);}
+  .del-btn{background:rgba(181,72,63,.15);border:1px solid #7a2c25;color:#e58880;}
+
+  table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  thead{background:var(--panel);}
+  th{
+    text-align:left;padding:16px 20px;color:var(--gold);font-size:12px;
+    letter-spacing:1.5px;border-bottom:1px solid var(--gold-dim);text-transform:uppercase;
+  }
+  td{padding:14px 20px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text);}
+  tbody tr:hover{background:rgba(212,175,55,.04);}
+  tbody tr:last-child td{border-bottom:none;}
+  .empty-state{
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:80px 20px;text-align:center;color:var(--text-dim);
+  }
+  .empty-state .ico{font-size:48px;display:block;margin-bottom:16px;}
+  .icon-btn{
+    background:transparent;border:1px solid var(--gold-dim);color:var(--gold);
+    padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;
+  }
+
+  /* Modal (shared: team / add-edit forms) */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.65);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-backdrop.active{display:flex;}
+  .modal{
+    background:#0f0a06;border:1px solid var(--gold-dim);border-radius:16px;
+    padding:36px 40px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;
+  }
+  .modal h3{
+    font-family:'Playfair Display',serif;color:var(--gold);font-size:26px;
+    text-align:center;margin:6px 0 4px;
+  }
+  .modal .sub{text-align:center;color:var(--text-dim);font-size:13px;margin-bottom:24px;}
+  .team-icon{text-align:center;font-size:30px;}
+  .member{
+    border:1px solid var(--border);border-radius:10px;padding:18px;
+    display:flex;gap:18px;align-items:center;margin-bottom:16px;
+  }
+  .avatar{
+    width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:18px;color:#fff;flex-shrink:0;
+  }
+  .member h4{margin:0 0 8px;font-size:18px;}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;}
+  .badge{
+    font-size:12px;padding:5px 12px;border-radius:14px;border:1px solid;font-weight:600;
+  }
+  .stack-box{
+    border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;
+    color:var(--gold);font-size:14px;margin-top:6px;
+  }
+  .stack-box .lbl{color:var(--text-dim);font-size:12px;display:block;margin-bottom:6px;}
+  .close-btn{
+    display:block;margin:24px auto 0;background:var(--gold-soft);color:#16100a;
+    border:none;padding:10px 36px;border-radius:8px;font-weight:700;cursor:pointer;
+  }
+
+  form .field{margin-bottom:14px;}
+  form label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;letter-spacing:.5px;}
+  form input, form select{
+    width:100%;padding:10px 14px;border-radius:7px;border:1px solid var(--border);
+    background:#100b06;color:var(--text);font-size:14px;
+  }
+  .form-actions{display:flex;gap:10px;margin-top:20px;}
+  .form-actions button{flex:1;}
+
+  @media (max-width:700px){
+    header{padding:14px 18px;}
+    main{padding:24px 18px 60px;}
+    .stats{gap:12px;}
+    .stat{padding:16px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="logo">📚</span>
+    <div>
+      <h1>Bengali Book Shop</h1>
+      <div class="sub">MANAGEMENT SYSTEM</div>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-btn active" data-view="dashboard">🏠 Dashboard</button>
+    <button class="nav-btn" data-view="books">📚 Books</button>
+    <button class="nav-btn" data-view="customers">👤 Customers</button>
+    <button class="nav-btn" data-view="orders">🛒 Orders</button>
+    <button class="nav-btn" data-view="receipts">🧾 Receipts</button>
+    <button class="nav-btn team" id="teamBtn">👥 Our Team</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="hero">
+      <div class="icon">📚</div>
+      <h2>Bengali Book Shop</h2>
+      <p>Manage your collection of classic and modern Bengali literature</p>
+      <div class="divider"></div>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statBooks">0</div><div class="label">TOTAL BOOKS</div></div>
+        <div class="stat"><div class="num" id="statCustomers">0</div><div class="label">CUSTOMERS</div></div>
+        <div class="stat"><div class="num" id="statOrders">0</div><div class="label">ORDERS</div></div>
+        <div class="stat"><div class="num" id="statStock">0</div><div class="label">TOTAL STOCK</div></div>
+      </div>
+    </div>
+    <div class="section-title">📖 Our Collection</div>
+    <div class="grid" id="collectionGrid"></div>
+  </section>
+
+  <!-- BOOKS -->
+  <section class="view" id="view-books">
+    <div class="toolbar">
+      <div class="section-title" style="margin:0;">📚 Book Catalog</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input class="search" id="bookSearch" placeholder="🔍 Search by title...">
+        <button class="btn" id="addBookBtn">+ Add Book</button>
+      </div>
+    </div>
+    <div class="grid" id="booksGrid"></div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section class="view" id="view-customers">
+    <div class="toolbar">
+      <div class="section-title" style="margin:0;">👤 Customers</div>
+      <button class="btn" id="addCustomerBtn">+ Add Customer</button>
+    </div>
+    <div id="customersWrap"></div>
+  </section>
+
+  <!-- ORDERS -->
+  <section class="view" id="view-orders">
+    <div class="toolbar">
+      <div class="section-title" style="margin:0;">🛒 Orders</div>
+      <button class="btn" id="addOrderBtn">+ Place Order</button>
+    </div>
+    <div id="ordersWrap"></div>
+  </section>
+
+  <!-- RECEIPTS -->
+  <section class="view" id="view-receipts">
+    <div class="toolbar">
+      <div class="section-title" style="margin:0;">🧾 Receipts</div>
+    </div>
+    <div id="receiptsWrap"></div>
+  </section>
+
+</main>
+
+<!-- TEAM MODAL -->
+<div class="modal-backdrop" id="teamModal">
+  <div class="modal">
+    <div class="team-icon">👥</div>
+    <h3>Our Team</h3>
+    <div class="sub">Book Shop Management System — Development Team</div>
+
+    <div class="member" style="border-color:#7a5a23;">
+      <div class="avatar" style="background:#b8902f;">S</div>
+      <div>
+        <h4>Sinthiya</h4>
+        <div class="badges">
+          <span class="badge" style="color:#d4af37;border-color:#7a5a23;background:rgba(212,175,55,.08);">👑 Project Lead</span>
+          <span class="badge" style="color:#b07ee0;border-color:#5c3d80;background:rgba(176,126,224,.08);">⚡ Frontend Dev</span>
+          <span class="badge" style="color:#6ea8e0;border-color:#2e4d73;background:rgba(110,168,224,.08);">🔧 Backend Dev</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="member" style="border-color:#2e4d73;">
+      <div class="avatar" style="background:#3a6ea8;">R</div>
+      <div>
+        <h4>Ramisa</h4>
+        <div class="badges">
+          <span class="badge" style="color:#6ea8e0;border-color:#2e4d73;background:rgba(110,168,224,.08);">🗄️ Database Designer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="member" style="border-color:#2e6b42;">
+      <div class="avatar" style="background:#2e7a4a;">P</div>
+      <div>
+        <h4>Priyonti</h4>
+        <div class="badges">
+          <span class="badge" style="color:#6fd18a;border-color:#2e6b42;background:rgba(111,209,138,.08);">✏️ Testing</span>
+          <span class="badge" style="color:#6fd18a;border-color:#2e6b42;background:rgba(111,209,138,.08);">📄 Documentation</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack-box">
+      <span class="lbl">📞 Tech Stack</span>
+      Spring Boot • H2 • Maven • REST API
+    </div>
+
+    <button class="close-btn" id="closeTeam">Close</button>
+  </div>
+</div>
+
+<!-- BOOK FORM MODAL -->
+<div class="modal-backdrop" id="bookModal">
+  <div class="modal">
+    <h3 id="bookModalTitle">Add Book</h3>
+    <form id="bookForm">
+      <input type="hidden" id="bookId">
+      <div class="field"><label>Title (Bengali)</label><input id="bTitleBn" required></div>
+      <div class="field"><label>Title (English)</label><input id="bTitleEn" required></div>
+      <div class="field"><label>Author (Bengali)</label><input id="bAuthorBn" required></div>
+      <div class="field"><label>Author (English)</label><input id="bAuthorEn" required></div>
+      <div class="field"><label>Category</label>
+        <select id="bCategory">
+          <option>Poetry</option><option>Novel</option><option>Epic Poetry</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Price (৳)</label><input id="bPrice" type="number" min="0" required></div>
+      <div class="field"><label>Stock</label><input id="bStock" type="number" min="0" required></div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" id="cancelBook">Cancel</button>
+        <button type="submit" class="btn">Save Book</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CUSTOMER FORM MODAL -->
+<div class="modal-backdrop" id="customerModal">
+  <div class="modal">
+    <h3>Add Customer</h3>
+    <form id="customerForm">
+      <div class="field"><label>Name</label><input id="cName" required></div>
+      <div class="field"><label>Phone</label><input id="cPhone" required></div>
+      <div class="field"><label>Email</label><input id="cEmail" type="email" required></div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" id="cancelCustomer">Cancel</button>
+        <button type="submit" class="btn">Save Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ORDER FORM MODAL -->
+<div class="modal-backdrop" id="orderModal">
+  <div class="modal">
+    <h3>Place Order</h3>
+    <form id="orderForm">
+      <div class="field"><label>Customer</label><select id="oCustomer" required></select></div>
+      <div class="field"><label>Book</label><select id="oBook" required></select></div>
+      <div class="field"><label>Quantity</label><input id="oQty" type="number" min="1" value="1" required></div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" id="cancelOrder">Cancel</button>
+        <button type="submit" class="btn">Place Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ---------- Data ---------- */
+const COVERS = [
+  {bg:'linear-gradient(135deg,#5a8a3a,#2e6b3f)', emoji:'📗'},
+  {bg:'linear-gradient(135deg,#2f3f8a,#7a3a8a)', emoji:'📘'},
+  {bg:'linear-gradient(135deg,#2e6b4f,#3a4a8a)', emoji:'📙'},
+  {bg:'linear-gradient(135deg,#8a2e4a,#a85a2e)', emoji:'📕'},
+  {bg:'linear-gradient(135deg,#4a3a8a,#2e6b8a)', emoji:'📓'},
+  {bg:'linear-gradient(135deg,#8a5a2e,#a8762e)', emoji:'📒'},
+  {bg:'linear-gradient(135deg,#2e6b6b,#2e4a8a)', emoji:'📔'},
+];
+
+const seedBooks = [
+  {id:1, titleBn:'গীতাঞ্জলি', titleEn:'Gitanjali', authorBn:'রবীন্দ্রনাথ ঠাকুর', authorEn:'Rabindranath Tagore', category:'Poetry', price:100, stock:25, cover:0, vol:'VOL 2'},
+  {id:2, titleBn:'শেষের কবিতা', titleEn:'Sesher Kobita', authorBn:'রবীন্দ্রনাথ ঠাকুর', authorEn:'Rabindranath Tagore', category:'Novel', price:500, stock:15, cover:1, vol:'VOL 3'},
+  {id:3, titleBn:'বনলতা সেন', titleEn:'Banalata Sen', authorBn:'জীবনানন্দ দাশ', authorEn:'Jibanananda Das', category:'Poetry', price:200, stock:20, cover:2, vol:'VOL 4'},
+  {id:4, titleBn:'অগ্নিবীণা', titleEn:'Agnibeena', authorBn:'কাজী নজরুল ইসলাম', authorEn:'Kazi Nazrul Islam', category:'Poetry', price:400, stock:18, cover:3, vol:'VOL 1'},
+  {id:5, titleBn:'মেঘনাদ বধ কাব্য', titleEn:'Meghnad Badh Kavya', authorBn:'মাইকেল মধুসূদন দত্ত', authorEn:'Michael Madhusudan Dutt', category:'Epic Poetry', price:350, stock:22, cover:4, vol:''},
+  {id:6, titleBn:'গৃহদাহ', titleEn:'Grihodah', authorBn:'শরৎচন্দ্র চট্টোপাধ্যায়', authorEn:'Sarat Chandra', category:'Novel', price:450, stock:20, cover:5, vol:''},
+  {id:7, titleBn:'দেখা না-দেখা', titleEn:'Dekha Na-Dekha', authorBn:'হুমায়ূন আহমেদ', authorEn:'Humayun Ahmed', category:'Novel', price:300, stock:22, cover:6, vol:''},
+];
+
+function load(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ return fallback; }
+}
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+let books = load('bbs_books', seedBooks);
+let customers = load('bbs_customers', []);
+let orders = load('bbs_orders', []);
+let receipts = load('bbs_receipts', []);
+let nextBookId = load('bbs_nextBookId', 8);
+let nextCustomerId = load('bbs_nextCustomerId', 1);
+let nextOrderId = load('bbs_nextOrderId', 1);
+let nextReceiptId = load('bbs_nextReceiptId', 1);
+
+function persistAll(){
+  save('bbs_books', books);
+  save('bbs_customers', customers);
+  save('bbs_orders', orders);
+  save('bbs_receipts', receipts);
+  save('bbs_nextBookId', nextBookId);
+  save('bbs_nextCustomerId', nextCustomerId);
+  save('bbs_nextOrderId', nextOrderId);
+  save('bbs_nextReceiptId', nextReceiptId);
+}
+
+/* ---------- Navigation ---------- */
+document.querySelectorAll('.nav-btn[data-view]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='dashboard') renderDashboard();
+  });
+});
+
+document.getElementById('teamBtn').addEventListener('click', ()=>document.getElementById('teamModal').classList.add('active'));
+document.getElementById('closeTeam').addEventListener('click', ()=>document.getElementById('teamModal').classList.remove('active'));
+document.getElementById('teamModal').addEventListener('click', e=>{ if(e.target.id==='teamModal') e.target.classList.remove('active'); });
+
+/* ---------- Render: Dashboard ---------- */
+function renderDashboard(){
+  document.getElementById('statBooks').textContent = books.length;
+  document.getElementById('statCustomers').textContent = customers.length;
+  document.getElementById('statOrders').textContent = orders.length;
+  document.getElementById('statStock').textContent = books.reduce((s,b)=>s+Number(b.stock),0);
+
+  const grid = document.getElementById('collectionGrid');
+  grid.innerHTML = books.map(b=>bookCardHTML(b, false)).join('');
+}
+
+/* ---------- Render: Books ---------- */
+function bookCardHTML(b, editable){
+  const cover = COVERS[b.cover % COVERS.length];
+  const low = b.stock <= 10;
+  return `
+  <div class="card">
+    <div class="cover" style="background:${cover.bg}">
+      <span>${cover.emoji}</span>
+      ${b.vol ? `<span class="vol">${b.vol}</span>` : ''}
+    </div>
+    <div class="body">
+      <div class="title bn">${b.titleBn} <span style="color:var(--text-dim);font-size:14px;">(${b.titleEn})</span></div>
+      <div class="author bn">✍️ ${b.authorBn} <span style="color:var(--text-dim);">(${b.authorEn})</span></div>
+      <span class="tag">${b.category}</span>
+      <div class="row-between">
+        <span class="price">৳${b.price}</span>
+        <span class="stock ${low?'low':''}">✓ ${b.stock} in stock</span>
+      </div>
+      ${editable ? `
+      <div class="actions">
+        <button class="edit-btn" onclick="openBookModal(${b.id})">✎ Edit</button>
+        <button class="del-btn" onclick="deleteBook(${b.id})">🗑</button>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderBooks(filter=''){
+  const grid = document.getElementById('booksGrid');
+  const f = filter.trim().toLowerCase();
+  const list = books.filter(b => !f || b.titleEn.toLowerCase().includes(f) || b.titleBn.includes(filter));
+  grid.innerHTML = list.length ? list.map(b=>bookCardHTML(b, true)).join('') :
+    `<div class="empty-state" style="grid-column:1/-1;"><span class="ico">📚</span>No books found.</div>`;
+}
+
+document.getElementById('bookSearch').addEventListener('input', e=>renderBooks(e.target.value));
+document.getElementById('addBookBtn').addEventListener('click', ()=>openBookModal());
+
+function openBookModal(id){
+  const modal = document.getElementById('bookModal');
+  const form = document.getElementById('bookForm');
+  form.reset();
+  if(id){
+    const b = books.find(x=>x.id===id);
+    document.getElementById('bookModalTitle').textContent = 'Edit Book';
+    document.getElementById('bookId').value = b.id;
+    document.getElementById('bTitleBn').value = b.titleBn;
+    document.getElementById('bTitleEn').value = b.titleEn;
+    document.getElementById('bAuthorBn').value = b.authorBn;
+    document.getElementById('bAuthorEn').value = b.authorEn;
+    document.getElementById('bCategory').value = b.category;
+    document.getElementById('bPrice').value = b.price;
+    document.getElementById('bStock').value = b.stock;
+  }else{
+    document.getElementById('bookModalTitle').textContent = 'Add Book';
+    document.getElementById('bookId').value = '';
+  }
+  modal.classList.add('active');
+}
+document.getElementById('cancelBook').addEventListener('click', ()=>document.getElementById('bookModal').classList.remove('active'));
+
+document.getElementById('bookForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('bookId').value;
+  const data = {
+    titleBn: document.getElementById('bTitleBn').value,
+    titleEn: document.getElementById('bTitleEn').value,
+    authorBn: document.getElementById('bAuthorBn').value,
+    authorEn: document.getElementById('bAuthorEn').value,
+    category: document.getElementById('bCategory').value,
+    price: Number(document.getElementById('bPrice').value),
+    stock: Number(document.getElementById('bStock').value),
+  };
+  if(id){
+    const b = books.find(x=>x.id===Number(id));
+    Object.assign(b, data);
+  }else{
+    books.push({...data, id: nextBookId, cover: (nextBookId-1), vol:''});
+    nextBookId++;
+  }
+  persistAll();
+  document.getElementById('bookModal').classList.remove('active');
+  renderBooks(document.getElementById('bookSearch').value);
+  renderDashboard();
+  refreshOrderSelects();
+});
+
+function deleteBook(id){
+  if(!confirm('Delete this book?')) return;
+  books = books.filter(b=>b.id!==id);
+  persistAll();
+  renderBooks(document.getElementById('bookSearch').value);
+  renderDashboard();
+  refreshOrderSelects();
+}
+
+/* ---------- Render: Customers ---------- */
+function renderCustomers(){
+  const wrap = document.getElementById('customersWrap');
+  if(!customers.length){
+    wrap.innerHTML = `<div class="empty-state"><span class="ico">👤</span>No customers yet.</div>`;
+    return;
+  }
+  wrap.innerHTML = `
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th></th></tr></thead>
+    <tbody>
+      ${customers.map(c=>`
+        <tr>
+          <td>${c.id}</td><td>${c.name}</td><td>${c.phone}</td><td>${c.email}</td>
+          <td><button class="icon-btn" onclick="deleteCustomer(${c.id})">Remove</button></td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+document.getElementById('addCustomerBtn').addEventListener('click', ()=>document.getElementById('customerModal').classList.add('active'));
+document.getElementById('cancelCustomer').addEventListener('click', ()=>document.getElementById('customerModal').classList.remove('active'));
+document.getElementById('customerForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  customers.push({
+    id: nextCustomerId++,
+    name: document.getElementById('cName').value,
+    phone: document.getElementById('cPhone').value,
+    email: document.getElementById('cEmail').value,
+  });
+  persistAll();
+  e.target.reset();
+  document.getElementById('customerModal').classList.remove('active');
+  renderCustomers();
+  renderDashboard();
+  refreshOrderSelects();
+});
+function deleteCustomer(id){
+  if(!confirm('Remove this customer?')) return;
+  customers = customers.filter(c=>c.id!==id);
+  persistAll();
+  renderCustomers();
+  renderDashboard();
+  refreshOrderSelects();
+}
+
+/* ---------- Render: Orders ---------- */
+function refreshOrderSelects(){
+  const cSel = document.getElementById('oCustomer');
+  const bSel = document.getElementById('oBook');
+  cSel.innerHTML = customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('') || '<option value="">No customers — add one first</option>';
+  bSel.innerHTML = books.map(b=>`<option value="${b.id}">${b.titleEn} (৳${b.price})</option>`).join('');
+}
+function renderOrders(){
+  const wrap = document.getElementById('ordersWrap');
+  if(!orders.length){
+    wrap.innerHTML = `<div class="empty-state"><span class="ico">🛒</span>No orders yet.</div>`;
+    return;
+  }
+  wrap.innerHTML = `
+  <table>
+    <thead><tr><th>ID</th><th>Customer</th><th>Book</th><th>Qty</th><th>Total</th><th>Date</th><th>Receipt</th></tr></thead>
+    <tbody>
+      ${orders.map(o=>`
+        <tr>
+          <td>${o.id}</td><td>${o.customerName}</td><td>${o.bookTitle}</td><td>${o.qty}</td>
+          <td>৳${o.total}</td><td>${o.date}</td><td>#${o.receiptNo}</td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+document.getElementById('addOrderBtn').addEventListener('click', ()=>{
+  if(!customers.length){ alert('Add a customer first.'); return; }
+  refreshOrderSelects();
+  document.getElementById('orderModal').classList.add('active');
+});
+document.getElementById('cancelOrder').addEventListener('click', ()=>document.getElementById('orderModal').classList.remove('active'));
+document.getElementById('orderForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const customer = customers.find(c=>c.id===Number(document.getElementById('oCustomer').value));
+  const book = books.find(b=>b.id===Number(document.getElementById('oBook').value));
+  const qty = Number(document.getElementById('oQty').value);
+  if(!customer || !book) return;
+  if(qty > book.stock){ alert('Not enough stock available.'); return; }
+  const total = qty * book.price;
+  const date = new Date().toISOString().slice(0,10);
+  const receiptNo = String(nextReceiptId).padStart(4,'0');
+
+  book.stock -= qty;
+  const order = { id:nextOrderId++, customerName:customer.name, bookTitle:book.titleEn, qty, total, date, receiptNo };
+  orders.push(order);
+  receipts.push({ id:nextReceiptId++, receiptNo, customer:customer.name, total, issuedAt:date });
+
+  persistAll();
+  e.target.reset();
+  document.getElementById('orderModal').classList.remove('active');
+  renderOrders();
+  renderReceipts();
+  renderDashboard();
+  renderBooks(document.getElementById('bookSearch').value);
+});
+
+/* ---------- Render: Receipts ---------- */
+function renderReceipts(){
+  const wrap = document.getElementById('receiptsWrap');
+  if(!receipts.length){
+    wrap.innerHTML = `<div class="empty-state"><span class="ico">🧾</span>No orders yet.</div>`;
+    return;
+  }
+  wrap.innerHTML = `
+  <table>
+    <thead><tr><th>ID</th><th>Receipt No.</th><th>Customer</th><th>Total</th><th>Issued At</th><th>View</th></tr></thead>
+    <tbody>
+      ${receipts.map(r=>`
+        <tr>
+          <td>${r.id}</td><td>#${r.receiptNo}</td><td>${r.customer}</td>
+          <td>৳${r.total}</td><td>${r.issuedAt}</td><td><button class="icon-btn" onclick="alert('Receipt #${r.receiptNo}\\nCustomer: ${r.customer}\\nTotal: ৳${r.total}')">View</button></td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+/* ---------- Init ---------- */
+renderDashboard();
+renderBooks();
+renderCustomers();
+refreshOrderSelects();
+renderOrders();
+renderReceipts();
+</script>
+</body>
+</html>
